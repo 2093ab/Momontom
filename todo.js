@@ -1,7 +1,8 @@
 const toDoForm = document.querySelector(".js-toDoForm"),
     toDoInput = toDoForm.querySelector("input"),
     toDoList = document.querySelector(".js-toDoList"),
-    finishList = document.querySelector(".js-finishList");
+    finishList = document.querySelector(".js-finishList"),
+    progressBar = document.querySelector(".js-progress");
 
 const TODOS_LS = 'PENDING',
     FINISH_LS = 'FINISHED'
@@ -11,15 +12,13 @@ const TODOS_LS = 'PENDING',
 let toDos = [],
     finishedItems = [];
 
-let finishNum = 0,
-    alltodoNum = 0;
-
 function rewind(event){
     const btn = event.target;
     const li = btn.parentNode;
     const text = li.querySelector("span").innerText;
     finishDelete(event);
     paintToDo(text);
+    saveProgress();
 }
 
 function finishDelete(event){
@@ -31,6 +30,7 @@ function finishDelete(event){
     });
     finishedItems = cleanFinish;
     saveToDos();
+    saveProgress();
 }
 
 function paintFinish(text){
@@ -42,9 +42,12 @@ function paintFinish(text){
     rewindBtn.innerText = "⏪";
     rewindBtn.addEventListener("click",rewind);
     const span = document.createElement("span");
-    const newID = finishedItems.length + 1;
+    let newID = 1;
+    if(finishedItems.length !== 0 ){
+        newID = finishedItems[finishedItems.length-1].id + 1;
+    }
     li.id = newID;
-    span_innerText = text;
+    span.innerText = text;
     li.appendChild(span);
     li.appendChild(delBtn);
     li.appendChild(rewindBtn);
@@ -63,7 +66,6 @@ function finishTodo(event){
     const text = li.querySelector("span").innerText;
     deleteToDo(event);
     paintFinish(text);
-    finishNum++;
     saveProgress();
 }
 
@@ -74,10 +76,8 @@ function deleteToDo(event){
     const cleanToDos = toDos.filter(function(toDo){
         return toDo.id !== parseInt(li.id);
     });
-    console.log(li.id);
     toDos = cleanToDos;
     saveToDos();
-    alltodoNum--;
     saveProgress();
 }
 
@@ -87,15 +87,22 @@ function saveToDos(){
 }
 
 function saveProgress(){
-    localStorage.setItem(FINISH,finishNum);
-    localStorage.setItem(ALL_TODO,alltodoNum);
+    localStorage.setItem(FINISH,finishedItems.length);
+    localStorage.setItem(ALL_TODO,finishedItems.length+toDos.length);
+    const finishNum = localStorage.getItem(FINISH);
+    const allNum = localStorage.getItem(ALL_TODO);
+    progressBar.innerHTML = `Progress: ${finishNum}/${allNum} finished`;
+    
 }
 
 function paintToDo(text){
     const li = document.createElement("li");
     const delBtn = document. createElement("button");
     const span = document.createElement("span");
-    const newId = toDos.length + 1;
+    let newId = 1;
+    if(toDos.length !== 0){
+        newId = toDos[toDos.length-1].id + 1;
+    }
     const checkBtn = document.createElement("button");
     checkBtn.innerText = "✅";
     delBtn.innerText = "❌";
@@ -117,7 +124,6 @@ function paintToDo(text){
 
 function handleSubmit(event){
     event.preventDefault();
-    alltodoNum++;
     saveProgress();
     const currentValue = toDoInput.value;
     paintToDo(currentValue);
@@ -127,16 +133,6 @@ function handleSubmit(event){
 function loadToDos(){
     const loadedToDos = localStorage.getItem(TODOS_LS);
     const loadedFinish = localStorage.getItem(FINISH_LS);
-    finishNum = localStorage.getItem(FINISH);
-    alltodoNum = localStorage.getItem(ALL_TODO);
-    if(finishNum === null){
-        localStorage.setItem(FINISH, 0);
-        finishNum = 0;
-    }
-    if(alltodoNum === null) {
-        localStorage.setItem(ALL_TODO, 0);
-        alltodoNum = 0;
-    }
     if(loadedToDos !== null){
         const parsedToDos = JSON.parse(loadedToDos);
         parsedToDos.forEach(function(toDo){
@@ -154,6 +150,7 @@ function loadToDos(){
 function init(){
     loadToDos();
     toDoForm.addEventListener("submit",handleSubmit);
+    saveProgress();
 }
 
 init();
