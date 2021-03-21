@@ -17,26 +17,28 @@
         <form class="js-toDoForm">
             <input type="text" placeholder ="Write a to do" />
         </form>
+        <br>
         <div class="container">
             <div class="item">
-                <a>Not Finished!</a>
+                <a><strong>Not Finished!</strong></a>
                 <ul class="js-toDoList">
                 </ul>
             </div>
-            &nbsp;&nbsp;&nbsp;&nbsp;
             <div class="item">
-                <a>Finished!</a>
+                <a><strong>Finished!</strong></a>
                 <ul class="js-finishList">
                 </ul>
             </div>
         </div>
         <h4 class="js-progress">Progress:</h4>
+        <label for="pgBar" class="js-percent"></label>
+        <progress id="pgBar" class="js-progressBar" max = "100" value="0"></progress>
+        <br>
         <spanc class="js-weather"></spanc>
         <script src="clock.js"></script>
         <script src="greeting.js"></script>
         <script src="todo.js"></script>
         <script src="bg.js"></script>
         <script src="weather.js"></script>
-        <!--script src="progressbar.js"></!--script-->
     </body>
 </html>

@@ -2,7 +2,9 @@ const toDoForm = document.querySelector(".js-toDoForm"),
     toDoInput = toDoForm.querySelector("input"),
     toDoList = document.querySelector(".js-toDoList"),
     finishList = document.querySelector(".js-finishList"),
-    progressBar = document.querySelector(".js-progress");
+    progressResult = document.querySelector(".js-progress"),
+    progressPercent = document.querySelector(".js-percent");
+    progressBar = document.querySelector(".js-progressBar");
 
 const TODOS_LS = 'PENDING',
     FINISH_LS = 'FINISHED'
@@ -91,8 +93,17 @@ function saveProgress(){
     localStorage.setItem(ALL_TODO,finishedItems.length+toDos.length);
     const finishNum = localStorage.getItem(FINISH);
     const allNum = localStorage.getItem(ALL_TODO);
-    progressBar.innerHTML = `Progress: ${finishNum}/${allNum} finished`;
-    
+    progressResult.innerHTML = `Progress: ${finishNum}/${allNum} finished`;
+    if(finishNum==0){
+        progressPercent.innerHTML = "0%";
+        progressBar.value = "0";
+    }
+    else{
+        const finishPercent = (finishNum/allNum)*100;
+        console.log(finishPercent);
+        progressPercent.innerHTML = `${finishPercent.toFixed(2)}%`;
+        progressBar.value = finishPercent;
+    }
 }
 
 function paintToDo(text){
@@ -120,6 +131,7 @@ function paintToDo(text){
     }; 
     toDos.push(toDoObj);
     saveToDos();
+    saveProgress();
 }
 
 function handleSubmit(event){
